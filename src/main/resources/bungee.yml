@@ -1,0 +1,5 @@
+name: PlayerListSync
+another: 7mi_chan
+version: '${version}'
+main: xyz.n7mn.dev.playerlistsync.PlayerListSync
+description: PlayerListSync
