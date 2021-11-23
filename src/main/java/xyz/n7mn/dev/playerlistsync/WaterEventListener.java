@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
@@ -114,6 +115,29 @@ public class WaterEventListener implements Listener {
                 statement2.setString(3, config.getServerName());
                 statement2.execute();
                 statement2.close();
+                con.close();
+            } catch (SQLException ex){
+                ex.printStackTrace();
+            }
+        }).start();
+    }
+
+    @EventHandler
+    public void ServerKickEvent (ServerKickEvent e){
+        new Thread(()->{
+
+            if (e.getPlayer().isConnected()){
+                return;
+            }
+
+            try {
+                Connection con = DriverManager.getConnection("jdbc:mysql://" + config.getMySQLServer() + ":" + config.getMySQLPort() + "/" + config.getMySQLDatabase() + config.getMySQLOption(), config.getMySQLUsername(), config.getMySQLPassword());
+
+                PreparedStatement statement = con.prepareStatement("UPDATE `PlayerList` SET `Active`= 0 WHERE MinecraftUUID = ? AND ServerName = ?");
+                statement.setString(1, e.getPlayer().getUniqueId().toString());
+                statement.setString(2, config.getServerName());
+                statement.execute();
+                statement.close();
                 con.close();
             } catch (SQLException ex){
                 ex.printStackTrace();
