@@ -77,8 +77,9 @@ public final class PlayerListSync extends Plugin {
                                     con.setAutoCommit(true);
                                 }
 
-                                PreparedStatement statement1 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ?");
+                                PreparedStatement statement1 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ? AND ServerNo = ?");
                                 statement1.setString(1, config1.getServerName());
+                                statement1.setInt(2, config1.getServerNo());
                                 ResultSet set = statement1.executeQuery();
 
                                 boolean isFound = false;
