@@ -13,12 +13,13 @@ public class ConfigJson {
     private int LimitPingCount = 15;
 
     private String ServerName = "";
+    private int ServerNo = 0;
 
     public ConfigJson(){
 
     }
 
-    public ConfigJson(String mySQLServer, int mySQLPort, String mySQLDatabase, String mySQLOption, String mySQLUsername, String mySQLPassword, int limitPlayerCount, int limitPingCount, String serverName){
+    public ConfigJson(String mySQLServer, int mySQLPort, String mySQLDatabase, String mySQLOption, String mySQLUsername, String mySQLPassword, int limitPlayerCount, int limitPingCount, String serverName, int serverNo){
         this.MySQLServer = mySQLServer;
         this.MySQLPort = mySQLPort;
         this.MySQLDatabase = mySQLDatabase;
@@ -29,6 +30,7 @@ public class ConfigJson {
         this.LimitPlayerCount = limitPlayerCount;
         this.LimitPingCount = limitPingCount;
         this.ServerName = serverName;
+        this.ServerNo = serverNo;
     }
 
     public String getMySQLServer() {
@@ -101,5 +103,13 @@ public class ConfigJson {
 
     public void setServerName(String serverName) {
         ServerName = serverName;
+    }
+
+    public int getServerNo() {
+        return ServerNo;
+    }
+
+    public void setServerNo(int serverNo) {
+        ServerNo = serverNo;
     }
 }
