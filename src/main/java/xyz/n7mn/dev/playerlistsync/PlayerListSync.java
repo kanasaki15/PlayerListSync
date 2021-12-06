@@ -62,67 +62,74 @@ public final class PlayerListSync extends Plugin {
             try {
                 con = DriverManager.getConnection("jdbc:mysql://" + config1.getMySQLServer() + ":" + config1.getMySQLPort() + "/" + config1.getMySQLDatabase() + config1.getMySQLOption(), config1.getMySQLUsername(), config1.getMySQLPassword());
                 con.setAutoCommit(true);
-
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (con != null){
-                            try {
-                                try {
-                                    PreparedStatement statement = con.prepareStatement("SELECT * FROM ServerList");
-                                    statement.execute();
-                                    statement.close();
-                                } catch (SQLException ex1){
-                                    con = DriverManager.getConnection("jdbc:mysql://" + config1.getMySQLServer() + ":" + config1.getMySQLPort() + "/" + config1.getMySQLDatabase() + config1.getMySQLOption(), config1.getMySQLUsername(), config1.getMySQLPassword());
-                                    con.setAutoCommit(true);
-                                }
-
-                                PreparedStatement statement1 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ? AND ServerNo = ?");
-                                statement1.setString(1, config1.getServerName());
-                                statement1.setInt(2, config1.getServerNo());
-                                ResultSet set = statement1.executeQuery();
-
-                                boolean isFound = false;
-                                if (set.next()){
-                                    isFound = true;
-                                    set.close();
-                                    statement1.close();
-                                }
-
-                                int playerCount = 0;
-                                for (Map.Entry<String, ServerInfo> entry : getProxy().getServersCopy().entrySet()) {
-                                    ServerInfo server = entry.getValue();
-                                    playerCount = playerCount + server.getPlayers().size();
-                                }
-
-                                PreparedStatement statement2;
-                                if (isFound){
-                                    statement2 = con.prepareStatement("UPDATE `ServerList` SET `PlayerCount`= ? WHERE ServerName = ? AND ServerNo = ?");
-                                    statement2.setInt(1, playerCount);
-                                    statement2.setString(2, config1.getServerName());
-                                    statement2.setInt(3, config1.getServerNo());
-                                } else {
-                                    statement2 = con.prepareStatement("INSERT INTO `ServerList`(`UUID`, `ServerName`, `ServerNo`, `PlayerCount`) VALUES (?,?,?,?)");
-                                    statement2.setString(1, UUID.randomUUID().toString());
-                                    statement2.setString(2, config1.getServerName());
-                                    statement2.setInt(3, config1.getServerNo());
-                                    statement2.setInt(4, playerCount);
-                                }
-
-                                statement2.execute();
-                                statement2.close();
-                            } catch (SQLException ex){
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                };
-
-                timer.scheduleAtFixedRate(task, 0L, 100L);
-
             } catch (SQLException e){
                 e.printStackTrace();
             }
+
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    if (con != null){
+                        try {
+                            con = DriverManager.getConnection("jdbc:mysql://" + config1.getMySQLServer() + ":" + config1.getMySQLPort() + "/" + config1.getMySQLDatabase() + config1.getMySQLOption(), config1.getMySQLUsername(), config1.getMySQLPassword());
+                            con.setAutoCommit(true);
+                        } catch (SQLException e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    try {
+                        try {
+                            PreparedStatement statement = con.prepareStatement("SELECT * FROM ServerList");
+                            statement.execute();
+                            statement.close();
+                        } catch (SQLException ex1){
+                            con = DriverManager.getConnection("jdbc:mysql://" + config1.getMySQLServer() + ":" + config1.getMySQLPort() + "/" + config1.getMySQLDatabase() + config1.getMySQLOption(), config1.getMySQLUsername(), config1.getMySQLPassword());
+                            con.setAutoCommit(true);
+                        }
+
+                        PreparedStatement statement1 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ? AND ServerNo = ?");
+                        statement1.setString(1, config1.getServerName());
+                        statement1.setInt(2, config1.getServerNo());
+                        ResultSet set = statement1.executeQuery();
+
+                        boolean isFound = false;
+                        if (set.next()){
+                            isFound = true;
+                            set.close();
+                            statement1.close();
+                        }
+
+                        int playerCount = 0;
+                        for (Map.Entry<String, ServerInfo> entry : getProxy().getServersCopy().entrySet()) {
+                            ServerInfo server = entry.getValue();
+                            playerCount = playerCount + server.getPlayers().size();
+                        }
+
+                        PreparedStatement statement2;
+                        if (isFound){
+                            statement2 = con.prepareStatement("UPDATE `ServerList` SET `PlayerCount`= ? WHERE ServerName = ? AND ServerNo = ?");
+                            statement2.setInt(1, playerCount);
+                            statement2.setString(2, config1.getServerName());
+                            statement2.setInt(3, config1.getServerNo());
+                        } else {
+                            statement2 = con.prepareStatement("INSERT INTO `ServerList`(`UUID`, `ServerName`, `ServerNo`, `PlayerCount`) VALUES (?,?,?,?)");
+                            statement2.setString(1, UUID.randomUUID().toString());
+                            statement2.setString(2, config1.getServerName());
+                            statement2.setInt(3, config1.getServerNo());
+                            statement2.setInt(4, playerCount);
+                        }
+
+                        statement2.execute();
+                        statement2.close();
+                    } catch (SQLException ex){
+                        ex.printStackTrace();
+                    }
+                }
+            };
+
+
+            timer.scheduleAtFixedRate(task, 0L, 100L);
         }).start();
 
     }
