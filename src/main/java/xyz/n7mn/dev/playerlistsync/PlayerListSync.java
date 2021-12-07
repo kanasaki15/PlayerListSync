@@ -23,6 +23,8 @@ public final class PlayerListSync extends Plugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        // 設定ファイルがなかったら新規作成する
         File file = getProxy().getPluginManager().getPlugin("PlayerListSync").getDataFolder();
         //System.out.println(file.getPath());
         if (!file.exists()){
@@ -45,6 +47,8 @@ public final class PlayerListSync extends Plugin {
 
         getProxy().getPluginManager().registerListener(this, new WaterEventListener(this));
 
+
+        // 設定ファイル読み込んで定期実行タスク生成
         new Thread(()->{
 
             File file1 = new File(this.getDataFolder().getPath()+"/config.json");
