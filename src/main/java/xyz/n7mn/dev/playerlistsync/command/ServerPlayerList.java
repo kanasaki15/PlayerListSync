@@ -3,14 +3,11 @@ package xyz.n7mn.dev.playerlistsync.command;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 import xyz.n7mn.dev.playerlistsync.PlayerListSync;
 import xyz.n7mn.dev.playerlistsync.config.ConfigJson;
 
 import java.sql.*;
-import java.util.Map;
-import java.util.UUID;
 
 public class ServerPlayerList extends Command {
 

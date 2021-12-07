@@ -110,7 +110,7 @@ public final class PlayerListSync extends Plugin {
                             PreparedStatement statement2;
                             if (isFound){
                                 statement2 = con.prepareStatement("UPDATE `ServerList` SET `PlayerCount`= ? WHERE ServerName = ? AND ServerNo = ?");
-                                statement2.setInt(1, playerCount);
+                                statement2.setInt(1, tempPlayerCount);
                                 statement2.setString(2, configJson.getServerName());
                                 statement2.setInt(3, configJson.getServerNo());
                             } else {
@@ -118,7 +118,7 @@ public final class PlayerListSync extends Plugin {
                                 statement2.setString(1, UUID.randomUUID().toString());
                                 statement2.setString(2, configJson.getServerName());
                                 statement2.setInt(3, configJson.getServerNo());
-                                statement2.setInt(4, playerCount);
+                                statement2.setInt(4, tempPlayerCount);
                             }
 
                             statement2.execute();
