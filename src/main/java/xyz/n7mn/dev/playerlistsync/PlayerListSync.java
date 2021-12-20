@@ -64,18 +64,30 @@ public final class PlayerListSync extends Plugin {
         }
         configJson = new Gson().fromJson(sb.toString(), ConfigJson.class);
 
+        final UUID[] uuid = {null};
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://" + configJson.getMySQLServer() + ":" + configJson.getMySQLPort() + "/" + configJson.getMySQLDatabase() + configJson.getMySQLOption(), configJson.getMySQLUsername(), configJson.getMySQLPassword());
+            con.setAutoCommit(true);
+
+            PreparedStatement statement1 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ? AND ServerNo = ?");
+            statement1.setString(1, configJson.getServerName());
+            statement1.setInt(2, configJson.getServerNo());
+
+            ResultSet set = statement1.executeQuery();
+
+            if (set.next()){
+                uuid[0] = UUID.fromString(set.getString("UUID"));
+                set.close();
+                statement1.close();
+            }
+        } catch (SQLException ex){
+            ex.printStackTrace();
+        }
+
+        UUID finalUuid = uuid[0];
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                if (con == null){
-                    try {
-                        con = DriverManager.getConnection("jdbc:mysql://" + configJson.getMySQLServer() + ":" + configJson.getMySQLPort() + "/" + configJson.getMySQLDatabase() + configJson.getMySQLOption(),configJson.getMySQLUsername(), configJson.getMySQLPassword());
-                        con.setAutoCommit(true);
-                    } catch (SQLException e){
-                        e.printStackTrace();
-                    }
-                }
-
                 try {
                     try {
                         PreparedStatement statement = con.prepareStatement("SELECT * FROM ServerList");
@@ -86,55 +98,43 @@ public final class PlayerListSync extends Plugin {
                         con.setAutoCommit(true);
                     }
 
-                    PreparedStatement statement1 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ? AND ServerNo = ?");
-                    statement1.setString(1, configJson.getServerName());
-                    statement1.setInt(2, configJson.getServerNo());
-
-                    ResultSet set = statement1.executeQuery();
-                    boolean isFound = false;
-                    if (set.next()){
-                        isFound = true;
-                        set.close();
-                        statement1.close();
-                    }
-
                     int tempPlayerCount = 0;
                     for (Map.Entry<String, ServerInfo> entry : getProxy().getServersCopy().entrySet()) {
                         ServerInfo server = entry.getValue();
                         tempPlayerCount = tempPlayerCount + server.getPlayers().size();
                     }
 
-                    PreparedStatement statement2;
-                    if (isFound){
-                        statement2 = con.prepareStatement("UPDATE `ServerList` SET `PlayerCount`= ? WHERE ServerName = ? AND ServerNo = ?");
-                        statement2.setInt(1, tempPlayerCount);
-                        statement2.setString(2, configJson.getServerName());
-                        statement2.setInt(3, configJson.getServerNo());
+                    PreparedStatement statement1;
+                    if (finalUuid != null){
+                        statement1 = con.prepareStatement("UPDATE `ServerList` SET `PlayerCount`= ? WHERE UUID = ?");
+                        statement1.setInt(1, tempPlayerCount);
+                        statement1.setString(2, finalUuid.toString());
                     } else {
-                        statement2 = con.prepareStatement("INSERT INTO `ServerList`(`UUID`, `ServerName`, `ServerNo`, `PlayerCount`) VALUES (?,?,?,?)");
-                        statement2.setString(1, UUID.randomUUID().toString());
-                        statement2.setString(2, configJson.getServerName());
-                        statement2.setInt(3, configJson.getServerNo());
-                        statement2.setInt(4, tempPlayerCount);
+                        UUID temp = UUID.randomUUID();
+                        statement1 = con.prepareStatement("INSERT INTO `ServerList`(`UUID`, `ServerName`, `ServerNo`, `PlayerCount`) VALUES (?,?,?,?)");
+                        statement1.setString(1, temp.toString());
+                        statement1.setString(2, configJson.getServerName());
+                        statement1.setInt(3, configJson.getServerNo());
+                        statement1.setInt(4, tempPlayerCount);
+                        uuid[0] = temp;
                     }
 
-                    statement2.execute();
-                    statement2.close();
+                    statement1.execute();
+                    statement1.close();
 
                     tempPlayerCount = 0;
-                    PreparedStatement statement3 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ?");
-                    statement3.setString(1, configJson.getServerName());
-                    ResultSet set1 = statement3.executeQuery();
+                    PreparedStatement statement2 = con.prepareStatement("SELECT * FROM ServerList WHERE ServerName = ?");
+                    statement2.setString(1, configJson.getServerName());
+                    ResultSet set1 = statement2.executeQuery();
                     while (set1.next()){
                         tempPlayerCount = tempPlayerCount + set1.getInt("PlayerCount");
                     }
                     playerCount = tempPlayerCount;
                     set1.close();
-                    statement3.close();
+                    statement2.close();
 
                 } catch (SQLException ex){
                     ex.printStackTrace();
-                    timer.cancel();
                 }
             }
         };
