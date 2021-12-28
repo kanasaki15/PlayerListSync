@@ -167,7 +167,7 @@ public final class PlayerListSync extends Plugin {
             }
         };
 
-        timer.scheduleAtFixedRate(task, 0, 500L);
+        timer.scheduleAtFixedRate(task, 0, 1000L);
     }
 
     @Override
