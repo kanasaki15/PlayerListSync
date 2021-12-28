@@ -18,10 +18,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.github.waterfallmc:waterfall-api:1.17-R0.1-SNAPSHOT'
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT'
 
     implementation 'mysql:mysql-connector-java:8.0.27'
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 def targetJavaVersion = 8
