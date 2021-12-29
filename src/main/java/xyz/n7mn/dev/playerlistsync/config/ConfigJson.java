@@ -10,17 +10,20 @@ public class ConfigJson {
     private String ServerName = "";
     private int ServerNo = 0;
 
+    private String ServerDisplayName = "";
+
     public ConfigJson(){
 
     }
 
-    public ConfigJson(String serverIP, int limitPlayerCount, int limitPingCount, String serverName, int serverNo){
+    public ConfigJson(String serverIP, int limitPlayerCount, int limitPingCount, String serverName, int serverNo, String serverDisplayName){
         this.ServerIP = serverIP;
 
         this.LimitPlayerCount = limitPlayerCount;
         this.LimitPingCount = limitPingCount;
         this.ServerName = serverName;
         this.ServerNo = serverNo;
+        this.ServerDisplayName = serverDisplayName;
     }
 
 
@@ -54,5 +57,13 @@ public class ConfigJson {
 
     public void setServerNo(int serverNo) {
         ServerNo = serverNo;
+    }
+
+    public String getServerDisplayName() {
+        return ServerDisplayName;
+    }
+
+    public void setServerDisplayName(String serverDisplayName) {
+        ServerDisplayName = serverDisplayName;
     }
 }

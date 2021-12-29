@@ -1,15 +1,19 @@
 package xyz.n7mn.dev.playerlistsync.TCP;
 
+import java.util.List;
+
 public class ReceptionData {
 
-    private String Status = "ok";
-    private String Mode = "";
-    private long PlayerList = 0;
+    private String Status;
+    private String Mode;
+    private long PlayerList;
+    private List<ServerPlayerList> ServerPlayerList;
 
-    public ReceptionData(String status, String mode, long playerList){
+    public ReceptionData(String status, String mode, long playerList, List<ServerPlayerList> serverPlayerList){
         this.Status = status;
         this.Mode = mode;
         this.PlayerList = playerList;
+        this.ServerPlayerList = serverPlayerList;
     }
 
     public String getStatus() {
@@ -34,6 +38,14 @@ public class ReceptionData {
 
     public void setPlayerList(long playerList) {
         PlayerList = playerList;
+    }
+
+    public List<ServerPlayerList> getServerPlayerList() {
+        return ServerPlayerList;
+    }
+
+    public void setServerPlayerList(List<ServerPlayerList> serverPlayerList) {
+        ServerPlayerList = serverPlayerList;
     }
 
 }

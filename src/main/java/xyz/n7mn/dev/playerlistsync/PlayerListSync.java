@@ -2,7 +2,6 @@ package xyz.n7mn.dev.playerlistsync;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import xyz.n7mn.dev.playerlistsync.TCP.ReceptionData;
@@ -21,6 +20,7 @@ public final class PlayerListSync extends Plugin {
     private ConfigJson configJson;
     private Timer timer = new Timer();
     private AtomicLong listCount = new AtomicLong();
+    private final UUID[] uuid = {null};
 
     @Override
     public void onEnable() {
@@ -64,19 +64,22 @@ public final class PlayerListSync extends Plugin {
         }
         configJson = new Gson().fromJson(sb.toString(), ConfigJson.class);
 
-        final UUID[] uuid = {null};
+
 
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 new Thread(()->{
                     try {
+                        //System.out.println("1");
                         if (uuid[0] == null){
+                            //.out.println("1-1");
                             Socket sock = new Socket(getConfig().getServerIP(), 19009);
                             OutputStream out = sock.getOutputStream();
 
-                            out.write(new Gson().toJson(new SendData("getcode", null, getConfig().getServerName(), getConfig().getServerNo(), "")).getBytes(StandardCharsets.UTF_8));
+                            out.write(new Gson().toJson(new SendData("getcode", null, getConfig().getServerName(), getConfig().getServerNo(), getConfig().getServerDisplayName(), sb.substring(0, sb.length() - 1))).getBytes(StandardCharsets.UTF_8));
                             out.flush();
+                            //System.out.println("1-2");
 
                             InputStream in = sock.getInputStream();
 
@@ -90,7 +93,7 @@ public final class PlayerListSync extends Plugin {
                                 String[] split = json.getMode().split(",");
                                 if (split.length == 2){
                                     uuid[0] = UUID.fromString(split[1]);
-                                    getProxy().getLogger().info("ServerCode取得完了 : "+ uuid[0]);
+                                    //getProxy().getLogger().info("ServerCode取得完了 : "+ uuid[0]);
                                 }
                             }
                             in.close();
@@ -101,6 +104,7 @@ public final class PlayerListSync extends Plugin {
                                 timer.cancel();
                                 return;
                             }
+                            //System.out.println("1-3");
                         }
 
                         Socket sock1 = new Socket(getConfig().getServerIP(), 19009);
@@ -115,7 +119,7 @@ public final class PlayerListSync extends Plugin {
                         if (sb.length() == 0){
                             sb.append(",");
                         }
-                        String json = new Gson().toJson(new SendData("player", uuid[0], "", 0, sb.substring(0, sb.length() - 1)));
+                        String json = new Gson().toJson(new SendData("player", uuid[0], "", 0, getConfig().getServerDisplayName(), sb.substring(0, sb.length() - 1)));
                         //System.out.println(json);
                         out1.write(json.getBytes(StandardCharsets.UTF_8));
                         out1.flush();
@@ -128,7 +132,7 @@ public final class PlayerListSync extends Plugin {
                         String str1 = new String(ByteData1, StandardCharsets.UTF_8);
                         ReceptionData json1 = new Gson().fromJson(str1, ReceptionData.class);
                         if (json1.getStatus().toLowerCase().equals("ok")){
-                            getProxy().getLogger().info("プレーヤーリスト同期完了");
+                            //getProxy().getLogger().info("プレーヤーリスト同期完了");
                         } else {
                             getProxy().getLogger().info("プレーヤーリスト同期失敗");
                             timer.cancel();
@@ -139,7 +143,7 @@ public final class PlayerListSync extends Plugin {
 
                         Socket sock2 = new Socket(getConfig().getServerIP(), 19009);
                         OutputStream out2 = sock2.getOutputStream();
-                        out2.write(new Gson().toJson(new SendData("ping", null, getConfig().getServerName(), 0, "")).getBytes(StandardCharsets.UTF_8));
+                        out2.write(new Gson().toJson(new SendData("ping", null, getConfig().getServerName(), 0, getConfig().getServerDisplayName(), "")).getBytes(StandardCharsets.UTF_8));
                         out2.flush();
 
                         InputStream in2 = sock2.getInputStream();
@@ -151,7 +155,7 @@ public final class PlayerListSync extends Plugin {
                         ReceptionData json2 = new Gson().fromJson(str2, ReceptionData.class);
                         if (json2.getStatus().toLowerCase().equals("ok")){
                             listCount.set(json2.getPlayerList());
-                            getProxy().getLogger().info("プレーヤーリスト取得完了 : "+listCount);
+                            //getProxy().getLogger().info("プレーヤーリスト取得完了 : "+listCount);
                         } else {
                             getProxy().getLogger().info("プレーヤーリスト取得失敗");
                             timer.cancel();
@@ -167,7 +171,7 @@ public final class PlayerListSync extends Plugin {
             }
         };
 
-        timer.scheduleAtFixedRate(task, 0, 1000L);
+        timer.scheduleAtFixedRate(task, 0, 500L);
     }
 
     @Override
@@ -182,5 +186,9 @@ public final class PlayerListSync extends Plugin {
 
     public long getListCount() {
         return listCount.get();
+    }
+
+    public UUID getServerUuid() {
+        return uuid[0];
     }
 }

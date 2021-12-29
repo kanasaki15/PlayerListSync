@@ -7,14 +7,16 @@ public class SendData {
     private UUID uuid;
     private String ServerName;
     private int ServerNo;
+    private String ServerDisplayName;
     private String PlayerList;
 
-    public SendData(String mode, UUID uuid, String serverName, int serverNo, String playerList){
+    public SendData(String mode, UUID uuid, String serverName, int serverNo, String serverDisplayName, String playerList){
         this.mode = mode;
         this.uuid = uuid;
         this.ServerName = serverName;
         this.ServerNo = serverNo;
         this.PlayerList = playerList;
+        this.ServerDisplayName = serverDisplayName;
     }
 
     public String getMode() {
@@ -47,6 +49,14 @@ public class SendData {
 
     public void setServerNo(int serverNo) {
         ServerNo = serverNo;
+    }
+
+    public String getServerDisplayName() {
+        return ServerDisplayName;
+    }
+
+    public void setServerDisplayName(String serverDisplayName) {
+        ServerDisplayName = serverDisplayName;
     }
 
     public String getPlayerList() {
