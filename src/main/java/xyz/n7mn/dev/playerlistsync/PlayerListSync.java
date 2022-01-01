@@ -101,7 +101,7 @@ public final class PlayerListSync extends Plugin {
                             sock.close();
 
                             if (uuid[0] == null){
-                                timer.cancel();
+                                //timer.cancel();
                                 return;
                             }
                             //System.out.println("1-3");
@@ -135,7 +135,7 @@ public final class PlayerListSync extends Plugin {
                             //getProxy().getLogger().info("プレーヤーリスト同期完了");
                         } else {
                             getProxy().getLogger().info("プレーヤーリスト同期失敗");
-                            timer.cancel();
+                            //timer.cancel();
                         }
                         in1.close();
                         out1.close();
@@ -158,13 +158,13 @@ public final class PlayerListSync extends Plugin {
                             //getProxy().getLogger().info("プレーヤーリスト取得完了 : "+listCount);
                         } else {
                             getProxy().getLogger().info("プレーヤーリスト取得失敗");
-                            timer.cancel();
+                            //timer.cancel();
                         }
                         in2.close();
                         out2.close();
                         sock2.close();
                     } catch (Exception ex){
-                        timer.cancel();
+                        //timer.cancel();
                         ex.printStackTrace();
                     }
                 }).start();
