@@ -18,6 +18,7 @@ public class WaterEventListener implements Listener {
     public void ProxyPingEvent (ProxyPingEvent e){
         ServerPing.Players players = e.getResponse().getPlayers();
 
+        players.setMax(plugin.getConfig().getLimitPlayerCount());
         if (plugin.getListCount() > 0 && plugin.getListCount() <= Integer.MAX_VALUE){
             players.setOnline((int) plugin.getListCount());
         }

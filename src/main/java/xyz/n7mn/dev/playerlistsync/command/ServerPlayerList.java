@@ -8,6 +8,7 @@ import net.md_5.bungee.api.plugin.Command;
 import xyz.n7mn.dev.playerlistsync.PlayerListSync;
 import xyz.n7mn.dev.playerlistsync.TCP.ReceptionData;
 import xyz.n7mn.dev.playerlistsync.TCP.SendData;
+import xyz.n7mn.dev.playerlistsync.TCP.ServerPlayerListData;
 import xyz.n7mn.dev.playerlistsync.config.ConfigJson;
 
 import java.io.InputStream;
@@ -32,10 +33,6 @@ public class ServerPlayerList extends Command {
 
         ConfigJson config = plugin.getConfig();
 
-        if (!sender.hasPermission("playersync.op")){
-            return;
-        }
-
         new Thread(()->{
             try {
                 Socket sock = new Socket(config.getServerIP(), 19009);
@@ -51,10 +48,10 @@ public class ServerPlayerList extends Command {
 
                 String str = new String(ByteData, StandardCharsets.UTF_8);
                 ReceptionData json = new Gson().fromJson(str, ReceptionData.class);
-                List<xyz.n7mn.dev.playerlistsync.TCP.ServerPlayerList> serverPlayerList = json.getServerPlayerList();
+                List<ServerPlayerListData> serverPlayerListData = json.getServerPlayerList();
 
                 long count = 0;
-                for (xyz.n7mn.dev.playerlistsync.TCP.ServerPlayerList data : serverPlayerList){
+                for (ServerPlayerListData data : serverPlayerListData){
                     sender.sendMessage(new TextComponent(ChatColor.GREEN+"["+data.getServerName()+"] "+ChatColor.YELLOW+"("+data.getPlayerList().length+")"+ChatColor.RESET));
                     count = count + data.getPlayerList().length;
                 }

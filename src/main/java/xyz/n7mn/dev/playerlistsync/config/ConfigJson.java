@@ -26,7 +26,6 @@ public class ConfigJson {
         this.ServerDisplayName = serverDisplayName;
     }
 
-
     public String getServerIP() {
         return ServerIP;
     }
@@ -35,8 +34,16 @@ public class ConfigJson {
         ServerIP = serverIP;
     }
 
+    public int getLimitPlayerCount() {
+        return LimitPlayerCount;
+    }
+
     public void setLimitPlayerCount(int limitPlayerCount) {
         LimitPlayerCount = limitPlayerCount;
+    }
+
+    public int getLimitPingCount() {
+        return LimitPingCount;
     }
 
     public void setLimitPingCount(int limitPingCount) {

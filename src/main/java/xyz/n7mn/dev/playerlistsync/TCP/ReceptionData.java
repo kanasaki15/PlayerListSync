@@ -7,13 +7,13 @@ public class ReceptionData {
     private String Status;
     private String Mode;
     private long PlayerList;
-    private List<ServerPlayerList> ServerPlayerList;
+    private List<ServerPlayerListData> ServerPlayerListData;
 
-    public ReceptionData(String status, String mode, long playerList, List<ServerPlayerList> serverPlayerList){
+    public ReceptionData(String status, String mode, long playerList, List<ServerPlayerListData> serverPlayerListData){
         this.Status = status;
         this.Mode = mode;
         this.PlayerList = playerList;
-        this.ServerPlayerList = serverPlayerList;
+        this.ServerPlayerListData = serverPlayerListData;
     }
 
     public String getStatus() {
@@ -40,12 +40,12 @@ public class ReceptionData {
         PlayerList = playerList;
     }
 
-    public List<ServerPlayerList> getServerPlayerList() {
-        return ServerPlayerList;
+    public List<ServerPlayerListData> getServerPlayerList() {
+        return ServerPlayerListData;
     }
 
-    public void setServerPlayerList(List<ServerPlayerList> serverPlayerList) {
-        ServerPlayerList = serverPlayerList;
+    public void setServerPlayerList(List<ServerPlayerListData> serverPlayerListData) {
+        ServerPlayerListData = serverPlayerListData;
     }
 
 }

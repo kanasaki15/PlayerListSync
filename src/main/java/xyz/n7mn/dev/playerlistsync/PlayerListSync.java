@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class PlayerListSync extends Plugin {
@@ -65,6 +66,12 @@ public final class PlayerListSync extends Plugin {
         configJson = new Gson().fromJson(sb.toString(), ConfigJson.class);
 
 
+        AtomicInteger tPlayerCount = new AtomicInteger();
+        getProxy().getServersCopy().forEach((s, serverInfo) -> {
+            for (ProxiedPlayer player : serverInfo.getPlayers()){
+                tPlayerCount.getAndIncrement();
+            }
+        });
 
         TimerTask task = new TimerTask() {
             @Override
@@ -72,6 +79,17 @@ public final class PlayerListSync extends Plugin {
                 new Thread(()->{
                     try {
                         //System.out.println("1");
+                        AtomicInteger temp = new AtomicInteger()
+                        getProxy().getServersCopy().forEach((s, serverInfo) -> {
+                            for (ProxiedPlayer player : serverInfo.getPlayers()){
+                                temp.getAndIncrement();
+                            }
+                        });
+
+                        if (temp.get() == tPlayerCount.get()){
+                            return;
+                        }
+
                         if (uuid[0] == null){
                             //.out.println("1-1");
                             Socket sock = new Socket(getConfig().getServerIP(), 19009);
@@ -165,7 +183,8 @@ public final class PlayerListSync extends Plugin {
                         sock2.close();
                     } catch (Exception ex){
                         //timer.cancel();
-                        ex.printStackTrace();
+                        //ex.printStackTrace();
+                        getProxy().getLogger().info("サーバー接続失敗");
                     }
                 }).start();
             }

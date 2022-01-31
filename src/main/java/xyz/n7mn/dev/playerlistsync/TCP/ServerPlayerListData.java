@@ -2,11 +2,11 @@ package xyz.n7mn.dev.playerlistsync.TCP;
 
 import java.util.UUID;
 
-public class ServerPlayerList {
+public class ServerPlayerListData {
     private String ServerName;
     private UUID[] PlayerList;
 
-    public ServerPlayerList(String serverName, UUID[] playerList){
+    public ServerPlayerListData(String serverName, UUID[] playerList){
         this.ServerName = serverName;
         this.PlayerList = playerList;
     }
