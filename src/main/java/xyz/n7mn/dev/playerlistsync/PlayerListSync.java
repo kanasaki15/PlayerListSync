@@ -79,7 +79,7 @@ public final class PlayerListSync extends Plugin {
                 new Thread(()->{
                     try {
                         //System.out.println("1");
-                        AtomicInteger temp = new AtomicInteger()
+                        AtomicInteger temp = new AtomicInteger();
                         getProxy().getServersCopy().forEach((s, serverInfo) -> {
                             for (ProxiedPlayer player : serverInfo.getPlayers()){
                                 temp.getAndIncrement();
