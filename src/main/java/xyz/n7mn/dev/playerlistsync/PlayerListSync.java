@@ -90,6 +90,8 @@ public final class PlayerListSync extends Plugin {
                             return;
                         }
 
+                        tPlayerCount.set(temp.intValue());
+
                         if (uuid[0] == null){
                             //.out.println("1-1");
                             Socket sock = new Socket(getConfig().getServerIP(), 19009);

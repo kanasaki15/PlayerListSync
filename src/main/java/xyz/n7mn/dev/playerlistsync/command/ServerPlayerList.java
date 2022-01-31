@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 
 
 public class ServerPlayerList extends Command {
@@ -48,7 +47,14 @@ public class ServerPlayerList extends Command {
 
                 String str = new String(ByteData, StandardCharsets.UTF_8);
                 ReceptionData json = new Gson().fromJson(str, ReceptionData.class);
-                List<ServerPlayerListData> serverPlayerListData = json.getServerPlayerList();
+                ServerPlayerListData[] serverPlayerListData = json.getServerPlayerList();
+
+                //System.out.println(str);
+                //System.out.println(json.getPlayerList());
+
+                if (json.getStatus().equals("ng")){
+                    return;
+                }
 
                 long count = 0;
                 for (ServerPlayerListData data : serverPlayerListData){

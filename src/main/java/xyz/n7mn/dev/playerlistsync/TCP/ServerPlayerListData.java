@@ -4,9 +4,9 @@ import java.util.UUID;
 
 public class ServerPlayerListData {
     private String ServerName;
-    private UUID[] PlayerList;
+    private String[] PlayerList;
 
-    public ServerPlayerListData(String serverName, UUID[] playerList){
+    public ServerPlayerListData(String serverName, String[] playerList){
         this.ServerName = serverName;
         this.PlayerList = playerList;
     }
@@ -19,11 +19,11 @@ public class ServerPlayerListData {
         ServerName = serverName;
     }
 
-    public UUID[] getPlayerList() {
+    public String[] getPlayerList() {
         return PlayerList;
     }
 
-    public void setPlayerList(UUID[] playerList) {
+    public void setPlayerList(String[] playerList) {
         PlayerList = playerList;
     }
 
