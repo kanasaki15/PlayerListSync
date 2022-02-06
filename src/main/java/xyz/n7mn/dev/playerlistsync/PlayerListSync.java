@@ -2,10 +2,13 @@ package xyz.n7mn.dev.playerlistsync;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import xyz.n7mn.dev.playerlistsync.TCP.ReceptionData;
 import xyz.n7mn.dev.playerlistsync.TCP.SendData;
+import xyz.n7mn.dev.playerlistsync.TCP.ServerPlayerListData;
 import xyz.n7mn.dev.playerlistsync.command.ServerPlayerList;
 import xyz.n7mn.dev.playerlistsync.config.ConfigJson;
 
@@ -78,7 +81,6 @@ public final class PlayerListSync extends Plugin {
             public void run() {
                 new Thread(()->{
                     try {
-                        //System.out.println("1");
                         AtomicInteger temp = new AtomicInteger();
                         getProxy().getServersCopy().forEach((s, serverInfo) -> {
                             for (ProxiedPlayer player : serverInfo.getPlayers()){
@@ -87,6 +89,65 @@ public final class PlayerListSync extends Plugin {
                         });
 
                         if (temp.get() == tPlayerCount.get()){
+                            if (uuid[0] == null){
+                                Socket sock = new Socket(getConfig().getServerIP(), 19009);
+                                OutputStream out = sock.getOutputStream();
+
+                                out.write(new Gson().toJson(new SendData("getcode", null, getConfig().getServerName(), getConfig().getServerNo(), getConfig().getServerDisplayName(), sb.substring(0, sb.length() - 1))).getBytes(StandardCharsets.UTF_8));
+                                out.flush();
+
+                                InputStream in = sock.getInputStream();
+
+                                byte[] ByteData = new byte[16384];
+                                int readSize = in.read(ByteData);
+                                ByteData = Arrays.copyOf(ByteData, readSize);
+                                String str = new String(ByteData, StandardCharsets.UTF_8);
+                                ReceptionData json = new Gson().fromJson(str, ReceptionData.class);
+                                if (json.getStatus().toLowerCase().equals("ok")){
+                                    String[] split = json.getMode().split(",");
+                                    if (split.length == 2){
+                                        uuid[0] = UUID.fromString(split[1]);
+                                    }
+                                }
+                                in.close();
+                                out.close();
+                                sock.close();
+
+                                if (uuid[0] == null){
+                                    return;
+                                }
+                            }
+
+                            try {
+                                Socket sock = new Socket(getConfig().getServerIP(), 19009);
+                                OutputStream out = sock.getOutputStream();
+
+                                out.write(new Gson().toJson(new SendData("list", uuid[0], getConfig().getServerName(), getConfig().getServerNo(), getConfig().getServerDisplayName(), "")).getBytes(StandardCharsets.UTF_8));
+                                out.flush();
+
+                                InputStream in = sock.getInputStream();
+                                byte[] ByteData = new byte[16384];
+                                int readSize = in.read(ByteData);
+                                ByteData = Arrays.copyOf(ByteData, readSize);
+
+                                String str = new String(ByteData, StandardCharsets.UTF_8);
+                                ReceptionData json = new Gson().fromJson(str, ReceptionData.class);
+                                ServerPlayerListData[] serverPlayerListData = json.getServerPlayerList();
+
+                                if (json.getStatus().equals("ng")){
+                                    return;
+                                }
+
+                                int count = 0;
+                                for (ServerPlayerListData data : serverPlayerListData){
+                                    count = count + data.getPlayerList().length;
+                                }
+                                temp.set(count);
+
+                            } catch (Exception ex){
+                                ex.printStackTrace();
+                            }
+
                             return;
                         }
 

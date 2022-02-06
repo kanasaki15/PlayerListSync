@@ -29,7 +29,6 @@ public class ServerPlayerList extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-
         ConfigJson config = plugin.getConfig();
 
         new Thread(()->{
@@ -66,6 +65,7 @@ public class ServerPlayerList extends Command {
             } catch (Exception ex){
                 ex.printStackTrace();
             }
+
 
         }).start();
 
